@@ -1,35 +1,15 @@
-// src/models/User.js
+
 const mongoose = require('mongoose');
 
-const UserSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    
-  },
-  phoneNumber: {
-    type: String,
- 
-  },
-  address: {
-    street: String,
-    city: String,
-    state: String,
-    zipCode: String,
-  },
-  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
-  
+const userSchema = new mongoose.Schema({
+  UserId:Int,
+  UserName: String,
+  Password: String,
+  Email: String,
+  Phone: String,
+  Address: String,
 });
 
-module.exports = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;

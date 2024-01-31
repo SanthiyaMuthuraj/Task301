@@ -1,38 +1,60 @@
-function calculateGSTExclusive(valueOfSupply, gstRate) {
-    return (valueOfSupply * gstRate) / 100;
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function calculateGST(productName, productPrice, productQuantity, rate) {
+  const gstRates = {
+    '12%': 0.12,
+    '5%': 0.05,
+    '18%': 0.18,
+    '25%': 0.25
+  };
+
+  if (!(rate in gstRates)) {
+    console.log('Invalid GST rate. Supported rates are 12%, 5%, 18%, and 25%.');
+    return null;
+  }
+
+  const gstRate = gstRates[rate];
+  const totalAmount = productPrice * productQuantity;
+  const gstAmount = totalAmount * gstRate;
+  const finalAmount = totalAmount + gstAmount;
+
+  return {
+    'Product Name': productName,
+    'Product Price': productPrice,
+    'Product Quantity': productQuantity,
+    'GST Rate': rate,
+    'GST Amount': gstAmount,
+    'Total Amount': finalAmount
+  };
 }
 
-function calculateGSTInclusive(valueOfSupply, gstRate) {
-    const gstAmount = valueOfSupply - (valueOfSupply / (1 + gstRate / 100));
-    return gstAmount;
-}
-
-function calculateTax(netPrice) {
-    if (netPrice <= 250000) {
-        return 0; // No Tax
-    } else if (netPrice <= 500000) {
-        return netPrice * 0.05; // 5% Tax Slab
-    } else if (netPrice <= 1000000) {
-        return netPrice * 0.2; // 20% Tax Slab
-    } else {
-        return netPrice * 0.3; // 30% Tax Slab
+function printBill(billData) {
+  if (billData) {
+    console.log('\n***** BILLING *****');
+    for (const [key, value] of Object.entries(billData)) {
+      console.log(`${key}: ${value}`);
     }
+    console.log('*******************');
+    console.log('---ThankYoForBuying---')
+  } else {
+    console.log('Error generating bill.');
+  }
+  rl.close();
 }
 
-const valueOfSupply = 500000;
-const gstRate = 18;
-
-const gstExclusiveAmount = calculateGSTExclusive(valueOfSupply, gstRate);
-const gstInclusiveAmount = calculateGSTInclusive(valueOfSupply, gstRate);
-
-const totalGSTAmount = gstExclusiveAmount + gstInclusiveAmount;
-const preGSTAmount = valueOfSupply + totalGSTAmount;
-
-const taxAmount = calculateTax(preGSTAmount);
-
-console.log(`Value of Supply: Rs. ${valueOfSupply}`);
-console.log(`GST Exclusive Amount: Rs. ${gstExclusiveAmount}`);
-console.log(`GST Inclusive Amount: Rs. ${gstInclusiveAmount}`);
-console.log(`Total GST Amount: Rs. ${totalGSTAmount}`);
-console.log(`Pre-GST Amount (Net Price): Rs. ${preGSTAmount}`);
-console.log(`Tax Amount: Rs. ${taxAmount}`);
+// Example usage
+rl.question('Enter product name: ', (productName) => {
+  rl.question('Enter product price: ', (productPrice) => {
+    rl.question('Enter product quantity: ', (productQuantity) => {
+      rl.question('Enter GST rate (12%, 5%, 18%, 25%): ', (rate) => {
+        const billData = calculateGST(productName, parseFloat(productPrice), parseInt(productQuantity), rate);
+        printBill(billData);
+      });
+    });
+  });
+});
